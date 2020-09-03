@@ -1,0 +1,190 @@
+import React, { Component } from 'react'
+import { Text, View, Image } from 'react-native'
+import { connect } from 'react-redux'
+import Header from '../../components/Header'
+import Input from '../../components/Input'
+import Button from '../../components/Button'
+import strings from '../../util/strings'
+import Images from '../../util/images'
+import EStyleSheet from 'react-native-extended-stylesheet';
+import Picker from '../../components/Picker'
+import types from '../../types'
+import Loader from '../../components/Loader'
+import CustomAlert from '../../components/CustomAlert'
+import * as Validations from '../../util/Validations'
+
+dp = (size) => EStyleSheet.value(size+'rem')
+
+class Add extends Component {
+
+    constructor(props) {
+        super(props) 
+        this.state= {
+            story: '',
+            category: -1,
+            title:'',
+            edit: true,
+            loading: false
+        }
+    }
+
+    componentDidMount() {
+
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            console.log(this.props.route)
+            if(this.props.route.params && !this.props.route.params.blur) {
+
+            const {_id, category, title} = this.props.route.params.story
+            
+                this.setState({
+                    category: this.props.categories.findIndex(obj=>obj._id==category),
+                    title,
+                    edit: false
+                })
+            } else { 
+                this.setState({
+                    category: -1,
+                    title: '',
+                    edit: true
+                })
+            }
+        });
+
+        this.blurListener = this.props.navigation.addListener('blur', () => {
+            this.props.navigation.setParams({blur:true})
+        });
+        
+    }
+
+    componentWillUnmount() {
+        this.focusListener()
+        this.blurListener()
+    }
+
+    submit() {
+        const  { firstName, lastName } = this.props.userDetails
+
+        let {story, title, category} = this.state
+
+        if(Validations.isAnyFieldEmpty([story, title])) {
+            alert(strings.fillFields)
+        } else {
+
+            let pars = {
+                story: story,
+                title: title,
+                name: firstName + ' ' + lastName,
+                category: this.props.categories[category]._id,
+            }
+
+            let reply = false
+
+            if(this.props.route.params) {
+                let {_id} = this.props.route.params.story
+                pars = {
+                    ...pars,
+                    storyId: _id
+                }
+
+                reply = true
+            }
+
+            this.setState({loading: true})
+
+            new Promise((resolve, reject)=>this.props[reply?'addStoryReply': 'addStory'](pars, resolve, reject)) 
+            .then(msg=>{
+                this.customAlert.showAlert(msg)
+            })
+            .catch(err=>{
+                this.customAlert.showError(err)
+                this.setState({loading: false})
+            })
+        }
+        
+    }
+
+    render() {
+
+        const  { firstName, lastName } = this.props.userDetails
+
+        const {edit } = this.state
+
+        return (
+            <Header title={strings.addStory} >
+                <View style={{width:'90%', alignSelf:'center'}} >
+
+                    <View style={{flexDirection:'row', alignItems:'center'}} >
+                        <Image source={Images.dummyProfile} style={{height:dp(30), width:dp(30), borderRadius:10, marginRight: dp(10)}} />
+                        <Text>{firstName + ' ' + lastName}</Text>
+                    </View>
+
+                    <Picker 
+                        list={this.props.categories} 
+                        itemKey='name'
+                        value={this.state.category}
+                        setValue={(category)=>this.setState({category})}
+                        label={strings.category}
+                        disabled={edit?false: true}
+                    />
+
+                    <Input 
+                        fnc={(title)=>this.setState({title})}
+                        value={this.state.title}
+                        label={strings.title}
+                        edit={edit}
+                    />
+
+                    <Input
+                        long= {200}
+                        fnc={(story)=> this.setState({story})}
+                        label={strings.startStory}
+                        value={this.state.story}
+                        multiline
+                    />
+
+                    <Button label={strings.submit} onPress={()=>this.submit()} />
+                </View>
+
+                <CustomAlert 
+                    onButtonPress={()=>{
+                        this.setState({
+                            story: '',
+                            category: 0,
+                            title:'',
+                            edit: true,
+                            loading: false
+                        })
+                        if(this.props.route.params) 
+                            this.props.navigation.goBack()
+                        
+                    }}
+                    ref={refs=>this.customAlert=refs}
+                />
+                <Loader show={this.props.loading || this.state.loading } />
+            </Header>
+        )
+    }
+}
+
+const mapStateToProps = (state) => ({
+    userDetails: state.profileReducer.userDetails,
+    categories: state.resourcesReducer.categories,
+    loading: state.storyReducer.loading
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    addStory: (pars, res, rej) => dispatch({
+        type: types.ADD_STORY,
+        pars: pars,
+        res,
+        rej
+    }),
+    addStoryReply: (pars, res, rej) => dispatch({
+        type: types.ADD_TO_STORY,
+        pars: pars,
+        res,
+        rej
+    })
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Add)

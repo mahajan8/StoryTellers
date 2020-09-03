@@ -1,0 +1,170 @@
+import React, { Component } from 'react'
+import { Text, View, Image, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, RefreshControl, Animated, TextInput } from 'react-native'
+import Images from '../util/images';
+import EStyleSheet from 'react-native-extended-stylesheet';
+import commonStyles from '../util/commonStyles';
+import LinearGradient from 'react-native-linear-gradient';
+import Input from './Input';
+
+dp = (size) => EStyleSheet.value(size + 'rem')
+
+let scrollY = 0
+let change = 0
+
+class Header extends Component {
+
+    pScroll = new Animated.Value(0)
+    nScroll = new Animated.Value(0)
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            refreshing: false, 
+            direction: 1,
+            titleHeight: dp(70)
+        }
+
+        
+        this.pScroll.addListener(Animated.event([{value: this.nScroll}], {useNativeDriver: false}));
+    }
+
+    onScroll (e) {
+        var currentOffset = e.nativeEvent.contentOffset.y;
+        var direction = currentOffset > scrollY ? 1 : 0;
+        scrollY = currentOffset;
+
+        if(direction!=this.state.direction) {
+            change = currentOffset
+            this.setState({direction: direction})
+        }
+        
+    }
+
+    render() {
+
+        const {direction, titleHeight} = this.state
+
+        const anim = this.pScroll.interpolate({
+            inputRange: [change,change+titleHeight],
+            outputRange: [0, -titleHeight],
+            extrapolate: 'clamp'
+        })
+
+        const animReverse = this.pScroll.interpolate({
+            inputRange: [change-titleHeight, change ],
+            outputRange: [0, -titleHeight],
+            extrapolate: 'clamp'
+        })
+
+        const { noScroll, onRefresh, refreshing, back, title, onBack, comp, noMargin, noTab } = this.props
+
+        return (
+            <KeyboardAvoidingView style={{ flexGrow: 1, height: '100%', backgroundColor:'#F7F7F7'  }} behavior={Platform.OS == 'ios' ? 'padding' : 'height'} enabled={noScroll ? false : true} keyboardVerticalOffset={Platform.OS == 'android' ? 80 : 20} >
+
+            
+                <Animated.View style={{position: direction?'absolute' : 'relative', transform: [{translateY: direction? anim : animReverse}]}} onLayout={(e)=> {
+                    var height = e.nativeEvent.layout.height;
+
+                    this.setState({titleHeight:height})
+                }} >
+                <LinearGradient 
+                    colors={['#35eaba','#4dd6c2', '#5dc6ca']} 
+                    // colors={['#feb97e','#f69159', '#fd8e72']} 
+                    start={{x: 0, y: 0}} 
+                    end={{x: 1, y: 0}} 
+                    style={[commonStyles.shadow, styles.headerView ]} 
+                >
+                    <View style={styles.titleView} >
+
+                    <TouchableOpacity onPress={() => {
+                        if (onBack)
+                            onBack()
+                        else
+                            back.goBack()
+                    }}
+                        style={{ }}
+                        hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }} >
+                        
+                            <Image source={Images.dummyProfile} style={styles.icons} />
+                           
+                    </TouchableOpacity>
+{/* Search View */}
+                    <Text style={styles.title} >{title}</Text>
+                    
+
+                    <TouchableOpacity onPress={() => {
+                        if (onBack)
+                            onBack()
+                        else
+                            back.goBack()
+                    }}
+                        style={{  }}
+                        hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }} >
+                    
+                            <Image source={Images.blackBackArrow} style={styles.icons} />
+                   
+                    </TouchableOpacity>
+
+                    </View>
+
+                    <Animated.View  >
+                        <TextInput 
+                            style={[{backgroundColor:'#FFF', height: dp(30), marginBottom:dp(10)},Platform.OS=='android'? {paddingVertical:0, paddingHorizontal:dp(4)} : {paddingVertical:dp(4)}]} 
+                            placeholder={'Search'} 
+                        />
+                    </Animated.View>
+                
+                </LinearGradient>
+                </Animated.View>
+                {comp ? comp : null}
+                <Animated.ScrollView contentContainerStyle={{ flexGrow: 1, width: '100%', paddingBottom: noTab? dp(30) : dp(100), marginTop: noMargin ? null : 0, top: titleHeight}} bounces={onRefresh ? true : false} ref={refs => this.scroll = refs} scrollEnabled={noScroll ? false : true}
+                    refreshControl={
+                        onRefresh ?
+                            <RefreshControl refreshing={refreshing} onRefresh={() => {
+                                onRefresh()
+                            }} />
+                            : null
+                    }
+                    keyboardShouldPersistTaps={'handled'}
+
+                onScroll={Animated.event([{nativeEvent: {contentOffset: {y: this.pScroll}}}], {useNativeDriver: true, listener: this.onScroll.bind(this)})}
+                
+                >
+                    {this.props.children}
+                </Animated.ScrollView>
+
+                {/* <Animated.View style={{height: dp(50), width: dp(100), position: 'absolute', top: 200, backgroundColor: 'red', transform: [{scale: anim}]}} /> */}
+
+            </KeyboardAvoidingView>
+        )
+    }
+}
+
+const styles = EStyleSheet.create({
+    icons: {
+        height: '20rem',
+        width: '20rem',
+        resizeMode: 'contain'
+    },
+    title: {
+        fontSize: '16rem',
+        color: '#FFF',
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+    titleView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        minHeight: '50rem'
+    },
+    headerView: {
+        backgroundColor: '$theme1',
+        marginBottom: 2,
+        paddingHorizontal: '15rem',
+        shadowOffset:{width: 0, height: 0.5}
+    }
+})
+
+export default Header
