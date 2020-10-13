@@ -69,7 +69,7 @@ function* getStories(action) {
                 ...categories
             }
         }
-        
+        console.log(pars)
         const response = yield call(new Api().postJSON, Config.getStories, pars )
         if(response.status) {
             yield put({type: types.GET_STORIES_SUCCESS, data: response.response})

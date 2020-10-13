@@ -19,6 +19,13 @@ const Styles = EStyleSheet.create({
     heading: {
         fontSize: '16rem', 
         marginBottom:'10rem'
+    },
+    inputBox: {
+        padding: '10rem', 
+        borderWidth:1, 
+        borderColor: '$theme1', 
+        borderRadius:25, 
+        marginTop:'10rem'
     }
 
 })

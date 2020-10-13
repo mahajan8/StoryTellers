@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Text, View, Modal, TouchableOpacity } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet';
 import ImagePicker from 'react-native-image-crop-picker';
+// import ImagePicker from 'react-native-image-picker';
 dp = (size) => EStyleSheet.value(size+'rem')
 
 export default class ImagePick extends Component {
@@ -44,13 +45,33 @@ export default class ImagePick extends Component {
                                 // this.props.onSelectImage(`data:${image.mime};base64,${image.data}`)
                                 this.props.onSelectImage({
                                   uri: image.path,
-                                  type: image.mime,
-                                  name: 'image.png' 
+                                  type: image.mime
                                 })
                             }).catch(err=>{
                                 console.log(err)
                                 this.setState({showModal:false})
                             })
+                            // const options = {
+                            //     title: 'Select Avatar',
+                            //     storageOptions: {
+                            //       skipBackup: true,
+                            //       path: 'images',
+                            //     },
+                            //   };
+                            // ImagePicker.launchImageLibrary(options, (response) => {
+                            //     if (response.didCancel) {
+                            //         console.log('User cancelled image picker');
+                            //       } else if (response.error) {
+                            //         console.log('ImagePicker Error: ', response.error);
+                            //       } else {
+                            //         const source = { uri: response.uri };
+                                 
+                            //         // You can also display the image using data:
+                            //         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+                                 
+                            //         console.log(response)
+                            //       }
+                            // });
                         }} >
                             <Text>Select from Gallery</Text>
                         </TouchableOpacity>

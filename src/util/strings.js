@@ -27,6 +27,7 @@ const strings ={
    description: 'Description',
    support: 'Support',
    sortFilter: 'Sort/Filter',
+   saveChanges: 'Save Changes',
 
 
 

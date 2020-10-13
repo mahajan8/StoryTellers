@@ -75,18 +75,22 @@ class StoryRead extends Component {
 
     checkUser= (user)=> this.state.userId==user
 
-    renderResponse = (story, user, name, index) => 
+    renderResponse = (story, user, name, profilePic, index) => 
     <View style={[Styles.storyContainer, { alignSelf:user? 'flex-end' : 'flex-start'}]} key={`storyItem${index}`} >
-        {user? null : <Image style={[Styles.profilePic, {marginRight:dp(5)}]} source={Images.dummyProfile} /> }
+        {user? null : <Image style={[Styles.profilePic, {marginRight:dp(8), marginBottom:dp(5)}]} source={profilePic? {uri: profilePic} : Images.dummyProfile} /> }
     
         <View style={{maxWidth:'75%'}} >
-        
-            <Text style={[Styles.storyBox, user? {borderBottomRightRadius:0, color: '#FFF'} : {borderBottomLeftRadius:0, backgroundColor:'#EEEEEE', color: '#000'}]} >{story}</Text>
 
-            <Text style={[{fontSize:dp(12), color: '#AAAAAA'}, {textAlign:user? 'right' : 'left' }]} >{name}</Text>
+            <View style={[Styles.storyBoxView, user? {borderBottomRightRadius:0, color: '#FFF'} : {borderBottomLeftRadius:0, backgroundColor:'#EEEEEE', color: '#000'}]} >
+        
+                <Text >{story}</Text>
+
+            </View>
+
+            <Text style={[{fontSize:dp(12), color: '#AAAAAA'}, {textAlign:user? 'right' : 'left' }]} >{user? 'You' : name}</Text>
         </View>
 
-        {user? <Image style={[Styles.profilePic, {marginLeft:dp(5)}]} source={Images.dummyProfile} /> : null}
+        {user? <Image style={[Styles.profilePic, {marginLeft:dp(8), marginBottom:dp(5)}]} source={profilePic? {uri: profilePic} : Images.dummyProfile} /> : null}
     </View>
 
     render() {
@@ -99,11 +103,10 @@ class StoryRead extends Component {
                 <View style={{width:'90%', alignSelf:'center'}} >
 
                     {story.map((item, index)=>
-                        this.renderResponse(item.story, this.checkUser(item.userId), item.userInfo.name, index)
-                        
+                        this.renderResponse(item.story, this.checkUser(item.userId), item.userInfo.name, item.userInfo.profilePic, index)
                     )}
                 </View>
-                
+
                 <Button label={strings.addToStory} gradientStyle={{marginBottom:dp(20)}} onPress={()=>this.addToStory()} />
 
                 <Loader show={loading} />

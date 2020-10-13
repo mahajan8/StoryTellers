@@ -4,11 +4,11 @@ const Styles = EStyleSheet.create({
     container: {
         alignSelf:'center', 
         width:'90%',
-        borderRadius:20, 
+        borderRadius:10, 
         backgroundColor:'#FFF',
-        overflow:'hidden',
+        // overflow:'hidden',
         marginTop: '5rem',
-        paddingVertical: '5rem'
+        paddingVertical: '10rem'
     },
     optionsContainer: {
         flexDirection:'row', 

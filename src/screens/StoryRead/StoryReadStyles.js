@@ -6,15 +6,19 @@ const Styles = EStyleSheet.create({
         marginBottom: '15rem'
     },
     profilePic: {
-        height:'20rem', 
-        width:'20rem', 
+        height:'24rem', 
+        width:'24rem', 
+        borderRadius: '12rem',
         resizeMode:'contain', 
         alignSelf:'flex-end', 
     },
     storyBox: {
+        
+    },
+    storyBoxView: {
         backgroundColor:'#00bbf0', 
-        padding:'15rem', 
         borderRadius:'25rem', 
+        padding:'15rem', 
     }
 })
 

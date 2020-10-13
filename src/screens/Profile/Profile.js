@@ -15,6 +15,7 @@ import { connect } from 'react-redux'
 import Styles from './ProfileStyles';
 import types from '../../types';
 import axios from 'axios'
+import Config from '../../APIs/ApiConfig';
 
 dp = (size) => EStyleSheet.value(size+'rem')
 
@@ -46,7 +47,7 @@ class Profile extends Component {
 
     handleBackPress = ()=>{
         if(this.state.edit) {
-            this.setState({edit: false})
+            this.setState({edit: false, picChange: false})
             return true ;
         } 
     }
@@ -91,7 +92,7 @@ class Profile extends Component {
         this.imagePicker.showPicker()
     }
 
-    editProfile() {
+    editProfile = async () => {
         const { firstName, lastName, email, postcode, profilePic, picChange } = this.state
         
         if(Validations.isFieldEmpty([firstName, lastName, email, postcode])) {
@@ -106,60 +107,61 @@ class Profile extends Component {
                 firstName,
                 lastName,
                 email,
-                postcode
+                postcode,
+            }
+
+            if(picChange) {
+                this.upload(profilePic, firstName+'_'+lastName+'.png')
             }
 
             this.props.editProfile(pars)
-
+            
             this.setState({
-                edit: false
+                edit: false,
+                picChange: false
             })
         }
     }
 
-    upload(image) {
+    upload(image, name) {
         let form = new FormData()
 
-        form.append('image', image)
+        let imageData = {
+            ...image,
+            name
+        }
 
+        form.append('image', imageData)
 
-        axios.post(
-            'http://192.168.29.133:5000/uploadImage',
-            {
-              body: form,
-              headers: {
-                'Content-Type': 'image/jpeg',
-              }
-            }
-          )
-          .then((responseData) => {
-            console.log("Succes "+ responseData)
-          })
-          .catch((error) => {
-            console.log("ERROR " + error)
-          });
+        console.log(form)
+        console.log(imageData)
         
+        const config = {
+            method: 'POST',
+            headers: {'Content-Type': 'multipart/form-data'},
+            body: form,
+        };
 
-        //   const config = {
-        //     method: 'POST',
-        //     headers: {
-                
-        //         'Content-Type': 'multipart/form-data',
-        //     },
-        //     body: form,
-        //    };
-        //   fetch('http://192.168.29.133:5000/uploadImage', config)
-        //    .then((res)=>res.json())
-        //    .then(res=>{
-        //         console.log(res);
-        //    }).catch((err)=>{console.log(err)});
+        fetch(Config.serverURL + 'uploadImage', config)
+        .then((res)=>res.json())
+        .then(res=>{
+            console.log(res)
+            let pars = {
+                profilePic: res.imageUrl
+            }
+
+            this.props.editProfile(pars)
+
+        }).catch((err)=>{
+            console.log(err)
+        });
           
     }
       
 
     render() {
 
-        const {edit} = this.state
+        const {edit, picChange} = this.state
 
         const { firstName, lastName, email, postcode, profilePic } = edit? this.state : this.props.userDetails
 
@@ -170,7 +172,7 @@ class Profile extends Component {
 
                 <View style={{ alignSelf:'center', flexDirection:'row'}} >
                     <View style={commonStyles.shadow} >
-                        <Image source={profilePic? {uri: profilePic }: Images.dummyProfile} style={Styles.profilePic} />
+                        <Image source={profilePic? picChange? {uri: profilePic.uri} : {uri: profilePic }: Images.dummyProfile} style={Styles.profilePic} />
                     </View>
                     <TouchableOpacity style={{alignSelf:'flex-end'}} onPress={()=>{
                         if(!edit)
@@ -188,8 +190,6 @@ class Profile extends Component {
                 {edit? null : 
                     <Text onPress={()=>this.props.navigation.navigate('ChangePassword')} style={{color:EStyleSheet.value('$theme2'), alignSelf:'center', marginTop:dp(15)}} >{strings.changePassword}</Text>
                 }
-
-                
 
                 <View style={{width:'90%', alignSelf:'center'}} >
 
@@ -221,10 +221,10 @@ class Profile extends Component {
                     onSelectImage={(image)=>{
                         this.setState({
                             picChange: true,
-                            profilePic: image.uri
+                            profilePic: image
                         })
                         console.log(image)
-                        // this.upload(image)
+
                     }}
                 />
             </Header>

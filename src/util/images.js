@@ -25,7 +25,7 @@ const Images = {
     rightarrow: require('../assets/assets/rightarrow/next.png'),
 
 
-    logo: require('../assets/images/logo.png'),
+    logo: require('../assets/images/App_logo.png'),
     home: require('../assets/images/home.png'),
     story: require('../assets/images/story.png'),
     profile: require('../assets/images/profile.png'),
@@ -45,6 +45,11 @@ const Images = {
     radio: require('../assets/images/radio.png'),
     radioSelected: require('../assets/images/radio_selected.png'),
     tick: require('../assets/images/tick.png'),
+
+
+    bookGif: require('../assets/images/bookgif.gif'),
+    bookGif2: require('../assets/images/bookgif2.gif'),
+    bookGif3: require('../assets/images/bookgif3.gif'),
 };
 
 export default Images

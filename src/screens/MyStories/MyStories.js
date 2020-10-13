@@ -27,7 +27,7 @@ const MyStories = (props) => {
         let list = props[index?'favorites':'myStories']
 
         return (
-            <View style={[commonStyles.shadow, Styles.container, {marginVertical:dp(20)}]} >
+            <View style={[commonStyles.shadow, Styles.container, {marginVertical:dp(15)}]} >
                 {
                     list.length?
                         list.map((item,index)=> {

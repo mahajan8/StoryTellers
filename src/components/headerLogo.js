@@ -57,5 +57,6 @@ const styles = EStyleSheet.create({
         width:'90%',
         alignSelf: 'center',
         borderRadius: 30,
+        marginBottom: '50rem'
     },
 })

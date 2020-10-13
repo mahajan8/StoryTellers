@@ -130,7 +130,7 @@ class Add extends Component {
                 />
                 : 
                 <TextInput 
-                    style={[{padding: dp(10), borderWidth:1, borderColor: EStyleSheet.value('$theme1'), borderRadius:25, marginTop:dp(10)}, index==2 && {height: dp(200), textAlignVertical:'top'}]}
+                    style={[Styles.inputBox, index==2 && {height: dp(200), textAlignVertical:'top'}]}
                     multiline={index==2}
                     onChangeText={(input)=>{
                         if(index==1) {
@@ -170,7 +170,7 @@ class Add extends Component {
                             gradientStyle={Styles.buttonGradient} 
                             Style={Styles.button} 
                             icon={Images.rightarrow}
-                            iconStyle={[Styles.buttonIcon, {rotation: 180}]}
+                            iconStyle={[Styles.buttonIcon, {transform: [{rotate: '180deg'}] }]}
                             onPress={()=>{
                                 let index = this._carousel.currentIndex
                                 if(index>0) {
@@ -204,7 +204,6 @@ class Add extends Component {
 
                     </View>
 
-                    
                 </View>
 
                 <CustomAlert 

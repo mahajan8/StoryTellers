@@ -13,20 +13,15 @@ import {
 } from 'react-native';
 import { useScreens } from 'react-native-screens';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import reducer from './src/reducers'
 import NavigationService from "./src/NavigationService";
 import Nav from './src/navigator'
-import createSagaMiddleware from 'redux-saga';
-import {rootSaga} from './src/sagas/index'
-
-const saga = createSagaMiddleware()
-
-const store = createStore(reducer,applyMiddleware(saga));
-
-saga.run(rootSaga)
+import { PersistGate } from 'redux-persist/integration/react'
+import configureStore from './src/configureStore'
+import Loader from './src/components/Loader';
 
 const height = Dimensions.get('window').height;
+
+const { store, persistor } = configureStore()
 
 const App: () => React$Node = () => {
 
@@ -46,9 +41,14 @@ const App: () => React$Node = () => {
     <SafeAreaView style={{heigh:height, flex:1, backgroundColor:'#FFF'}}>
         
         <Provider store={store} >
-          <Nav ref={navigatorRef => {
-            NavigationService.setTopLevelNavigator(navigatorRef);
-          }}  />
+          <PersistGate loading={<Loader/>}
+            persistor={persistor}>
+
+              <Nav ref={navigatorRef => {
+                NavigationService.setTopLevelNavigator(navigatorRef);
+              }}  />
+
+          </PersistGate>
         </Provider>
       </SafeAreaView>
   );

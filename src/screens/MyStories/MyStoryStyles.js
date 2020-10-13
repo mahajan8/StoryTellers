@@ -4,9 +4,10 @@ const Styles = EStyleSheet.create({
     container: {
         alignSelf:'center', 
         width:'90%',
-        borderRadius:20, 
+        borderRadius:10, 
         backgroundColor:'#FFF',
-        overflow:'hidden'
+        // overflow:'hidden',
+        paddingVertical: '10rem'
     }
 
 })

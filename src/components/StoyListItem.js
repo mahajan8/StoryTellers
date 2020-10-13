@@ -11,7 +11,7 @@ dp = (size) => EStyleSheet.value(size+'rem')
 
 const Item = (props) => {
 
-    const {item, readStory, fav, userDetails, toggleFav} = props
+    const {item, readStory, fav, userDetails, toggleFav, item : {userInfo} } = props
 
     const { favorites = [] } = userDetails
 
@@ -20,7 +20,7 @@ const Item = (props) => {
     return(
         <TouchableOpacity style={[styles.container]} onPress={readStory} >
             <View style={{flexDirection:'row', alignItems:'center'}} >
-                <Image source={Images.dummyProfile} style={styles.profilePic} />
+                <Image source={ userInfo.profilePic? {uri: userInfo.profilePic} : Images.dummyProfile} style={styles.profilePic} />
                 <View style={{width:'65%'}} >
                     <Text style={{fontWeight:'bold', fontSize:dp(16), color: EStyleSheet.value('$theme1')}}>{item.title}</Text>
                     <Text style={{marginVertical:dp(2), color: '#c3c3c3', fontSize:dp(13), color: '#ff5151'}}>{category == undefined? '' : category.name }</Text>
@@ -57,7 +57,7 @@ const styles = EStyleSheet.create({
         width:'15%', 
         height:'40rem', 
         borderRadius:'25rem', 
-        resizeMode:'contain', 
+        resizeMode:'center', 
         marginRight:'15rem',
     }
 })
@@ -77,4 +77,4 @@ const mapDispatchToProps = (dispatch) => ({
 })
   
   
-  export default connect(mapStateToProps, mapDispatchToProps)(Item)
+export default connect(mapStateToProps, mapDispatchToProps)(Item)
